@@ -5,6 +5,7 @@ const DB = (() => {
     const options = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useCreateIndex: true,
     };
     mongoose
       .connect(process.env.DB_HOST, options)
