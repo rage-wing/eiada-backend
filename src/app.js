@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const { errorHandler, notFound } = require('./middlewares/errorHandler');
 const routes = require('./routes');
+const response = require('./utils/response');
 
 const app = express();
 
@@ -15,6 +16,9 @@ app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// overrides
+app.response.sends = response;
 
 // mongoose connect
 DB.connect();
