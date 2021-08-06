@@ -16,6 +16,7 @@
     "no-return-assign": "off",
     "camelcase": "off",
     "linebreak-style": "off",
-    "object-curly-newline": "off"
+    "object-curly-newline": "off",
+    "no-console": "off"
   }
 }
