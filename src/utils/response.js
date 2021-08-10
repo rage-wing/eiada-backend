@@ -14,21 +14,27 @@ module.exports = function send(code, payload, extra) {
     },
     403: {
       code: 403,
-      status: 'unauthorized',
-      message: extra || 'you are not authorized',
       error: '🥞',
+      status: 'unauthorized',
+      message: payload || 'you are not authorized',
     },
     404: {
       code: 404,
-      status: 'not found',
-      message: `this ${extra || 'page'} is not found`,
       error: '🥞',
+      status: 'not found',
+      message: payload || `this ${extra || 'page'} is not found`,
+    },
+    409: {
+      code: 409,
+      error: '🥞',
+      status: 'conflict',
+      message: payload || `this ${extra} is conflicting with other records`,
     },
     500: {
       code: 500,
-      status: 'server error',
-      message: extra || 'we are sorry! unexpected error happened',
       error: '🥞',
+      status: 'server error',
+      message: payload || 'we are sorry! unexpected error happened',
     },
   };
 
