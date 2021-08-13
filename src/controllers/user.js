@@ -5,18 +5,28 @@ const User = require('../models/user');
 const { ACCESS_TOKEN } = process.env;
 
 const UserController = (() => {
-  const get = (req, res) => {
-    res.sends(200, req.params.id);
+  const hidePassword = (user) => {
+    delete user._doc.password;
+    return user;
+  };
+
+  const get = async (req, res) => {
+    const { username } = req.params;
+    try {
+      let user = await User.findOne({ username });
+      user = hidePassword(user);
+      res.sends(200, user);
+    } catch (error) {
+      res.sends(404, error);
+    }
   };
   const auth = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
 
     try {
       const username = jwt.verify(token, ACCESS_TOKEN);
-      const user = await User.findOne({ username });
-
-      // hide the password
-      delete user._doc.password;
+      let user = await User.findOne({ username });
+      user = hidePassword(user);
       res.sends(200, { user });
     } catch (error) {
       res.sends(403);
@@ -26,15 +36,13 @@ const UserController = (() => {
     const { username, password } = req.body;
 
     try {
-      const user = await User.findOne({ username });
+      let user = await User.findOne({ username });
       const pass = await bcrypt.compare(password, user.password);
 
       if (pass) {
         const token = jwt.sign(username, ACCESS_TOKEN);
         user._doc.token = token;
-
-        // hide the password
-        delete user._doc.password;
+        user = hidePassword(user);
         res.sends(200, { user });
       } else {
         throw new Error();
@@ -50,19 +58,47 @@ const UserController = (() => {
     const newUser = new User({ name, username, password, email });
 
     try {
-      const user = await newUser.save();
+      let user = await newUser.save();
       const token = jwt.sign(username, ACCESS_TOKEN);
       user._doc.token = token;
-
-      // hide the password
-      delete newUser._doc.password;
+      user = hidePassword(user);
       res.sends(200, { user });
     } catch (error) {
       res.sends(409, error.message);
     }
   };
-  const edit = (req, res) => {};
-  const remove = (req, res) => {};
+  const edit = async (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const username = jwt.verify(token, ACCESS_TOKEN);
+    let user = await User.findOne({ username });
+    const { name } = req.body;
+    let { password } = req.body;
+
+    // edit available proprties
+    if (user) {
+      if (name) user.name = name;
+      if (password) {
+        password = password ? await bcrypt.hash(password, 10) : null;
+        user.password = password;
+      }
+      user = await user.save();
+      user = hidePassword(user);
+      res.sends(200, user);
+    } else {
+      res.sends(404, null, 'user');
+    }
+  };
+  const remove = async (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const username = jwt.verify(token, ACCESS_TOKEN);
+    let user = await User.findOneAndRemove({ username });
+    if (user) {
+      user = hidePassword(user);
+      res.sends(200, user);
+    } else {
+      res.sends(404, null, 'user');
+    }
+  };
 
   return {
     get,
