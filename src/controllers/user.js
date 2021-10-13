@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const Mailer = require('services/mailer');
 const User = require('../models/user');
 
 const { ACCESS_TOKEN } = process.env;
@@ -88,6 +89,25 @@ const UserController = (() => {
       res.sends(404, null, 'user');
     }
   };
+  const validatePasswordReset = async (req, res) => {
+    const { token } = req.params;
+
+    try {
+      jwt.verify(token, ACCESS_TOKEN);
+      res.send(200);
+    } catch (error) {
+      res.sends(403);
+    }
+  };
+  const passwordReset = async (req, res) => {
+    const { email } = req.body;
+    const sent = Mailer.sendPasswordResetEmail(email);
+    if (sent) {
+      res.sends(200);
+    } else {
+      res.sends(500, "can't send email");
+    }
+  };
   const remove = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     const username = jwt.verify(token, ACCESS_TOKEN);
@@ -107,6 +127,8 @@ const UserController = (() => {
     signup,
     edit,
     remove,
+    passwordReset,
+    validatePasswordReset,
   };
 })();
 

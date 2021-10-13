@@ -18,6 +18,10 @@ router.post('/signup', User.signup);
 // edit user
 router.put('/', User.edit);
 
+// password reset
+router.put('/reset', User.passwordReset);
+router.put('/reset/:token', User.validatePasswordReset);
+
 // remove user
 router.delete('/', User.remove);
 
