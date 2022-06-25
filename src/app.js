@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 const DB = require('./db');
+const firebase = require('./services/firebase');
 require('dotenv').config();
 
 const { errorHandler, notFound } = require('./middlewares/errorHandler');
@@ -20,8 +21,9 @@ app.use(express.json());
 // overrides
 app.response.sends = response;
 
-// mongoose connect
+// services inits
 DB.connect();
+firebase.init();
 
 // routes
 app.get('/', (_req, res) => {
