@@ -10,6 +10,7 @@ const firebase = (() => {
 
   return {
     init,
+    admin,
   };
 })();
 
