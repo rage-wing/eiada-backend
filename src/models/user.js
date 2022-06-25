@@ -9,22 +9,15 @@ const User = new Schema({
     required: 'name is required',
     trim: true,
   },
-  username: {
-    type: String,
-    required: 'username is required',
-    unique: true,
-    trim: true,
-    lowercase: true,
-  },
-  email: {
+  phone: {
     type: String,
     unique: true,
     trim: true,
     lowercase: true,
-    required: 'email is required',
+    required: 'phone is required',
     match: [
-      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-      'not valid email address',
+      /^[0-9]{11}$/,
+      'not valid phone number',
     ],
   },
   password: {
