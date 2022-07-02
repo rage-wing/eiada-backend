@@ -23,6 +23,8 @@ app.response.sends = response;
 // services inits
 DB.connect();
 require('./models/Doctor');
+require('./models/User');
+require('./models/Appointment');
 
 // routes
 app.get('/', (_req, res) => {

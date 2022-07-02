@@ -1,10 +1,11 @@
-require('../models/Doctor');
 const User = require('../models/User');
 
 const UserController = (() => {
   const login = async (req, res) => {
     const { email } = req.body;
-    const user = await User.findOne({ email }).exec('doctor');
+    const user = await User.findOne({ email }).populate('doctor');
+
+    console.log(user);
 
     if (!user) {
       const newUser = new User(req.body);
