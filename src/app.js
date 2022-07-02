@@ -3,7 +3,6 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 const DB = require('./db');
-const firebase = require('./services/firebase');
 require('dotenv').config();
 
 const { errorHandler, notFound } = require('./middlewares/errorHandler');
@@ -23,7 +22,7 @@ app.response.sends = response;
 
 // services inits
 DB.connect();
-firebase.init();
+require('./models/Doctor');
 
 // routes
 app.get('/', (_req, res) => {

@@ -10,7 +10,9 @@ const DB = (() => {
     };
     mongoose
       .connect(process.env.DB_HOST, options)
-      .then(() => console.log('Mondodb Connected'))
+      .then(() => {
+        console.log('Mondodb Connected');
+      })
       .catch((err) => console.error(err));
   };
 

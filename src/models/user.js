@@ -6,23 +6,29 @@ const { Schema } = mongoose;
 const User = new Schema({
   name: {
     type: String,
-    required: 'name is required',
     trim: true,
   },
-  phone: {
+  email: {
     type: String,
     unique: true,
     trim: true,
     lowercase: true,
-    required: 'phone is required',
-    match: [
-      /^[0-9]{11}$/,
-      'not valid phone number',
-    ],
+    required: 'email is required',
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/, 'not valid email'],
   },
-  password: {
+  role: {
     type: String,
-    required: 'password is required',
+    enum: ['admin', 'doctor', 'user'],
+    default: 'user',
+  },
+  doctor: {
+    type: Schema.Types.ObjectId,
+    ref: 'Doctor',
+  },
+  phone: {
+    type: String,
+    trim: true,
+    match: [/^[0-9]{11}$/, 'not valid phone number'],
   },
   joined: {
     type: Date,
@@ -33,4 +39,4 @@ const User = new Schema({
 // handling unique errors
 User.post('save', unique);
 
-module.exports = mongoose.model('user', User);
+module.exports = mongoose.model('User', User);
