@@ -1,6 +1,5 @@
 const express = require('express');
-const userRoutes = require('./user');
-const patientRoutes = require('./patient');
+const appointmentRoutes = require('./appointment');
 
 const router = express.Router();
 
@@ -10,10 +9,6 @@ router.get('/', (_req, res) => {
   });
 });
 
-// global
-router.use('/user', userRoutes);
-
-// private
-router.use('/patient', patientRoutes);
+router.use('/appointment', appointmentRoutes);
 
 module.exports = router;

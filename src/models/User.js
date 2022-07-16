@@ -4,7 +4,14 @@ const unique = require('../utils/unique');
 const { Schema } = mongoose;
 
 const User = new Schema({
-  name: {
+  uid: {
+    type: String,
+    unique: true,
+    trim: true,
+    lowercase: true,
+    required: 'uid is required',
+  },
+  displayName: {
     type: String,
     trim: true,
   },
@@ -16,6 +23,15 @@ const User = new Schema({
     required: 'email is required',
     match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/, 'not valid email'],
   },
+  phoneNumber: {
+    type: String,
+    trim: true,
+    match: [/^[0-9]{11}$/, 'not valid phone number'],
+  },
+  photoURL: {
+    type: String,
+    trim: true,
+  },
   role: {
     type: String,
     enum: ['admin', 'doctor', 'user'],
@@ -24,11 +40,6 @@ const User = new Schema({
   doctor: {
     type: Schema.Types.ObjectId,
     ref: 'Doctor',
-  },
-  phone: {
-    type: String,
-    trim: true,
-    match: [/^[0-9]{11}$/, 'not valid phone number'],
   },
   joined: {
     type: Date,

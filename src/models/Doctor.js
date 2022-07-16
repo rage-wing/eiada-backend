@@ -12,10 +12,10 @@ const Doctor = new Schema({
     type: String,
     trim: true,
   },
-  specialty: {
+  speciality: {
     type: String,
     enum: ['cardiology', 'dermatology', 'neurology', 'pediatrics', 'surgery'],
-    default: 'cardiology',
+    required: 'speciality is required',
   },
   address: {
     type: String,
