@@ -1,4 +1,5 @@
-const { default: axios } = require('axios');
+const axios = require('axios');
+const Paymob = require('../services/Paymob');
 const Appointment = require('../models/Appointment');
 
 const AppointmentController = (() => {
@@ -26,65 +27,33 @@ const AppointmentController = (() => {
 
   const reserve = async (req, res) => {
     const appointmentId = req.params.id;
-    const appointment = await Appointment.find({ _id: appointmentId }).populate(
+    const appointment = await Appointment.findById(appointmentId).populate(
       populateAppointmentMap
     );
 
+    console.log();
+
     try {
-      const result = await axios.post(
-        'https://flashapi.paymob.com/v1/intention/',
-        {
-          amount: '300',
-          currency: 'EGP',
-          payment_methods: ['card', 'kiosk', 'card-installment'],
-          billing_data: {
-            apartment: '803',
-            email: 'claudette09@exa.com',
-            floor: '42',
-            first_name: 'Clifford',
-            street: 'Ethan Land',
-            building: '8028',
-            phone_number: '+201010101010',
-            shipping_method: 'PKG',
-            postal_code: '01898',
-            city: 'Jaskolskiburgh',
-            country: 'CR',
-            last_name: 'Nicolas',
-            state: 'Utah',
-          },
-          customer: {
-            first_name: 'test',
-            last_name: 'test',
-            email: 'claudette09@exa.com',
-          },
-          items: [
-            {
-              name: 'ASC1515',
-              amount: '150',
-              description: 'Smart Watch',
-              quantity: '1',
-            },
-            {
-              name: 'ERT6565',
-              amount: '150',
-              description: 'Power Bank',
-              quantity: '1',
-            },
-          ],
-          extras: { some_field: 'some_value' },
-        },
-        {
-          headers: {
-            Accept: 'application/json',
-            Authorization:
-              'Token sk_test_a535f30fb1694b41f247b998c868f95fe5f392ed29ba1a9955092a82370ccce7',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      res.json(result.data);
+      const paymob = new Paymob();
+      // const intention = await paymob.createIntention({
+      //   amount: '300',
+      //   billing_data: {
+      //     email: appointment.patient.email,
+      //     first_name: appointment.patient.displayName.split(' ')[0],
+      //     last_name: appointment.patient.displayName.split(' ')[1],
+      //   },
+      //   customer: {
+      //     first_name: appointment.patient.displayName.split(' ')[0],
+      //     last_name: appointment.patient.displayName.split(' ')[1],
+      //     email: appointment.patient.email,
+      //   },
+      // });
+
+      const result = await paymob.pay(appointment.patient);
+
+      res.sends(200, result);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data || error);
     }
   };
 
