@@ -27,6 +27,7 @@ require('./models/User');
 require('./models/Appointment');
 
 // routes
+app.use(express.static('public'));
 app.get('/', (_req, res) => {
   res.json({
     message: '🦄🌈✨👋🌎🌍🌏👋✨🌈🦄',
