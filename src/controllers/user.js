@@ -2,9 +2,8 @@ const User = require('../models/User');
 
 const UserController = (() => {
   const login = async (req, res) => {
-    const { uid } = req.body;
-    const user = await User.findOne({ uid }).populate('doctor');
-
+    const { email } = req.body;
+    const user = await User.findOne({ email }).populate('doctor');
     if (!user) {
       const newUser = new User(req.body);
       await newUser.save();
