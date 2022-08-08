@@ -26,6 +26,12 @@ const AppointmentController = (() => {
   };
 
   const reserve = async (req, res) => {
+    const appointment = new Appointment(req.body);
+    await appointment.save();
+    res.sends(200, appointment);
+  };
+
+  const pay = async (req, res) => {
     const appointmentId = req.params.id;
     const appointment = await Appointment.findById(appointmentId).populate(
       populateAppointmentMap
