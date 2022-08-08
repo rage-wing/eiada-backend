@@ -31,29 +31,11 @@ const AppointmentController = (() => {
       populateAppointmentMap
     );
 
-    console.log();
-
     try {
-      const paymob = new Paymob();
-      // const intention = await paymob.createIntention({
-      //   amount: '300',
-      //   billing_data: {
-      //     email: appointment.patient.email,
-      //     first_name: appointment.patient.displayName.split(' ')[0],
-      //     last_name: appointment.patient.displayName.split(' ')[1],
-      //   },
-      //   customer: {
-      //     first_name: appointment.patient.displayName.split(' ')[0],
-      //     last_name: appointment.patient.displayName.split(' ')[1],
-      //     email: appointment.patient.email,
-      //   },
-      // });
-
-      const result = await paymob.pay(appointment.patient);
-
+      const result = await Paymob.pay(appointment.patient);
       res.sends(200, result);
     } catch (error) {
-      console.log(error.response.data || error);
+      res.json(error.response.data);
     }
   };
 
