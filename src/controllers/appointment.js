@@ -28,20 +28,23 @@ const AppointmentController = (() => {
   const reserve = async (req, res) => {
     const appointment = new Appointment(req.body);
     await appointment.save();
-    res.sends(200, appointment);
+    const paymentToken = await pay(appointment.id);
+    res.sends(200, {
+      ...appointment._doc,
+      paymentToken,
+    });
   };
 
-  const pay = async (req, res) => {
-    const appointmentId = req.params.id;
+  const pay = async (appointmentId) => {
     const appointment = await Appointment.findById(appointmentId).populate(
       populateAppointmentMap
     );
 
     try {
       const result = await Paymob.pay(appointment.patient);
-      res.sends(200, result);
+      return result;
     } catch (error) {
-      res.json(error.response.data);
+      console.log(error.response.data);
     }
   };
 
