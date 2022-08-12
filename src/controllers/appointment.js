@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Paymob = require('../services/Paymob');
 const Appointment = require('../models/Appointment');
+const User = require('../models/User');
 
 const AppointmentController = (() => {
   const populateAppointmentMap = [
@@ -17,6 +18,7 @@ const AppointmentController = (() => {
       model: 'User',
     },
   ];
+
   const getAll = async (req, res) => {
     const userId = req.params.uid;
     const appointments = await Appointment.find({ patient: userId }).populate(
@@ -35,22 +37,22 @@ const AppointmentController = (() => {
     });
   };
 
-  const pay = async (appointmentId) => {
-    const appointment = await Appointment.findById(appointmentId).populate(
-      populateAppointmentMap
-    );
-
+  const generatePaymentToken = async (req, res) => {
+    const patient = await User.findById(req.body.patient);
+    console.log(req.body.patient);
     try {
-      const result = await Paymob.pay(appointment.patient);
-      return result;
+      const token = await Paymob.pay(patient);
+      res.sends(200, token);
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error);
+      res.sends(500, '', error);
     }
   };
 
   return {
     getAll,
     reserve,
+    generatePaymentToken,
   };
 })();
 

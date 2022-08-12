@@ -62,8 +62,8 @@ const Paymob = (() => {
       email: patient.email,
     };
     const token = await exchangeToken();
-    const order = await createOrder(token, 3500);
 
+    const order = await createOrder(token, 3500);
     // CARD : 423021
     // WALLET : 2393641
     const payment = await createPaymentToken(
