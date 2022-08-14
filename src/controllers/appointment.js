@@ -1,45 +1,66 @@
-const axios = require('axios');
 const Paymob = require('../services/Paymob');
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
 
 const AppointmentController = (() => {
-  const populateAppointmentMap = [
-    {
-      path: 'doctor',
-      model: 'Doctor',
-      populate: {
-        path: 'user',
+  const getAllAppointments = async (role, uid) => {
+    const populateAppointmentMap = [
+      {
+        path: 'doctor',
+        model: 'Doctor',
+        populate: {
+          path: 'user',
+          model: 'User',
+        },
+      },
+      {
+        path: 'patient',
         model: 'User',
       },
-    },
-    {
-      path: 'patient',
-      model: 'User',
-    },
-  ];
+    ];
+    const appointments = await Appointment.find({ [role]: uid }).populate(
+      populateAppointmentMap
+    );
+
+    return appointments;
+  };
 
   const getAll = async (req, res) => {
     const userId = req.params.uid;
-    const appointments = await Appointment.find({ patient: userId }).populate(
-      populateAppointmentMap
-    );
+    const appointments = await getAllAppointments('patient', userId);
     res.sends(200, appointments);
+  };
+
+  const getUpcoming = async (req, res) => {
+    const userId = req.params.uid;
+    const appointments = await getAllAppointments('patient', userId);
+    const upcoming = appointments
+      .filter(
+        (appointment) => appointment.date.getTime() >= new Date().getTime()
+      )
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+    res.sends(200, upcoming);
+  };
+
+  const getHistory = async (req, res) => {
+    const userId = req.params.uid;
+    const appointments = await getAllAppointments('patient', userId);
+    const history = appointments
+      .filter(
+        (appointment) => appointment.date.getTime() < new Date().getTime()
+      )
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
+    res.sends(200, history);
   };
 
   const reserve = async (req, res) => {
     const appointment = new Appointment(req.body);
     await appointment.save();
-    const paymentToken = await pay(appointment.id);
-    res.sends(200, {
-      ...appointment._doc,
-      paymentToken,
-    });
+    res.sends(200, appointment);
   };
 
   const generatePaymentToken = async (req, res) => {
     const patient = await User.findById(req.body.patient);
-    console.log(req.body.patient);
     try {
       const token = await Paymob.pay(patient);
       res.sends(200, token);
@@ -53,6 +74,8 @@ const AppointmentController = (() => {
     getAll,
     reserve,
     generatePaymentToken,
+    getUpcoming,
+    getHistory,
   };
 })();
 

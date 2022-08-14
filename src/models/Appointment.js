@@ -48,10 +48,6 @@ const Appointment = new Schema({
     type: Date,
     required: true,
   },
-  time: {
-    type: Date,
-    required: true,
-  },
   paid: {
     type: Boolean,
     default: false,
