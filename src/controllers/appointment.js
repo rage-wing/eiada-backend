@@ -54,9 +54,13 @@ const AppointmentController = (() => {
   };
 
   const reserve = async (req, res) => {
-    const appointment = new Appointment(req.body);
-    await appointment.save();
-    res.sends(200, appointment);
+    try {
+      const patient = await User.findById(req.params.patient);
+      const result = await Paymob.createIntention(patient, 300);
+      res.sends(200, result);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const generatePaymentToken = async (req, res) => {
