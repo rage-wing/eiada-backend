@@ -1,6 +1,7 @@
 const Paymob = require('../services/Paymob');
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
+const Promo = require('../models/Promo');
 
 const AppointmentController = (() => {
   const getAllAppointments = async (role, uid) => {
@@ -54,10 +55,44 @@ const AppointmentController = (() => {
   };
 
   const reserve = async (req, res) => {
+    let appointmentPrice = 30000;
+    const { phone, promoCode } = req.body;
+    if (!phone) {
+      res.sends(422, 'No phone number specified');
+      return;
+    }
+    if (!/^[0-9]{11}$/.test(phone)) {
+      res.sends(422, 'not a valid phone number');
+      return;
+    }
+
+    if (promoCode) {
+      const promo = await Promo.findOne({ code: promoCode });
+      if (promo) {
+        const { amount, type, validUntil } = promo;
+        if (new Date() > validUntil) {
+          res.sends(400, 'this promo code expired');
+        } else {
+          if (type === 'flat') appointmentPrice -= amount;
+          if (type === 'percent')
+            appointmentPrice = (appointmentPrice * amount) / 100;
+        }
+      }
+    }
     try {
       const patient = await User.findById(req.params.patient);
-      const result = await Paymob.createIntention(patient, 300);
-      res.sends(200, result);
+      if (patient) {
+        const result = await Paymob.createIntention(
+          {
+            ...patient._doc,
+            phone_number: phone,
+          },
+          appointmentPrice
+        );
+        res.sends(200, result);
+      } else {
+        res.sends(404, 'patient not found');
+      }
     } catch (error) {
       console.log(error);
     }

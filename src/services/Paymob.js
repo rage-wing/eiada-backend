@@ -77,7 +77,7 @@ const Paymob = (() => {
     return payment.token;
   };
 
-  const createIntention = async (patient, price) => {
+  const createIntention = async (patient, price, extra) => {
     const config = {
       headers: {
         Authorization: `Token ${secret}`,
@@ -93,7 +93,7 @@ const Paymob = (() => {
         first_name: patient.displayName.split(' ')[0],
         last_name: patient.displayName.split(' ')[1],
         email: patient.email,
-        phone_number: '+201010101010',
+        phone_number: '+201007733887',
       },
       customer: {
         first_name: patient.displayName.split(' ')[0],
