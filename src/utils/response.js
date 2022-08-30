@@ -38,5 +38,11 @@ module.exports = function send(code, payload, extra) {
     },
   };
 
-  return this.status(code).json(responses[code]);
+  return this.status(code).json(
+    responses[code] || {
+      code,
+      payload: payload,
+      message: extra,
+    }
+  );
 };

@@ -2,6 +2,7 @@ const axios = require('axios');
 
 const Paymob = (() => {
   const apiKey = process.env.PAYMOB_API_KEY;
+  const secret = process.env.PAYMOB_SECRET_KEY;
   const baseUrl = 'https://accept.paymob.com/api';
   const defaultBillingData = {
     apartment: 'NA',
@@ -76,8 +77,45 @@ const Paymob = (() => {
     return payment.token;
   };
 
+  const createIntention = async (patient, price, extra) => {
+    const config = {
+      headers: {
+        Authorization: `Token ${secret}`,
+      },
+    };
+
+    const data = {
+      amount: price,
+      currency: 'EGP',
+      payment_methods: ['card'],
+      billing_data: {
+        ...defaultBillingData,
+        first_name: patient.displayName.split(' ')[0],
+        last_name: patient.displayName.split(' ')[1],
+        email: patient.email,
+        phone_number: '+201007733887',
+      },
+      customer: {
+        first_name: patient.displayName.split(' ')[0],
+        last_name: patient.displayName.split(' ')[1],
+        email: patient.email,
+      },
+      items: [],
+      extras: {},
+    };
+
+    const res = await axios.post(
+      'https://flashapi.paymob.com/v1/intention/',
+      data,
+      config
+    );
+
+    return res.data;
+  };
+
   return {
     pay,
+    createIntention,
   };
 })();
 
