@@ -121,6 +121,10 @@ const AppointmentController = (() => {
     }
   };
 
+  const processPayment = (req, res) => {
+    res.sends(200, req.query);
+  };
+
   const generatePaymentToken = async (req, res) => {
     const patient = await User.findById(req.body.patient);
     try {
@@ -139,6 +143,7 @@ const AppointmentController = (() => {
     getUpcoming,
     getHistory,
     calcPayment,
+    processPayment,
   };
 })();
 
