@@ -54,6 +54,27 @@ const AppointmentController = (() => {
     res.sends(200, history);
   };
 
+  const calcPayment = async (req, res) => {
+    let appointmentPrice = 30000;
+    const { promoCode } = req.body;
+    const promo = await Promo.findOne({ code: promoCode });
+    if (promo) {
+      const { amount, type, validUntil } = promo;
+      if (new Date() > validUntil) {
+        res.sends(200, {
+          price: appointmentPrice,
+        });
+      } else {
+        if (type === 'flat') appointmentPrice -= amount;
+        if (type === 'percent')
+          appointmentPrice = (appointmentPrice * amount) / 100;
+      }
+    }
+    res.sends(200, {
+      price: appointmentPrice,
+    });
+  };
+
   const reserve = async (req, res) => {
     let appointmentPrice = 30000;
     const { phone, promoCode } = req.body;
@@ -77,6 +98,8 @@ const AppointmentController = (() => {
           if (type === 'percent')
             appointmentPrice = (appointmentPrice * amount) / 100;
         }
+      } else {
+        res.sends(400, 'promo code not valid');
       }
     }
     try {
@@ -115,6 +138,7 @@ const AppointmentController = (() => {
     generatePaymentToken,
     getUpcoming,
     getHistory,
+    calcPayment,
   };
 })();
 
