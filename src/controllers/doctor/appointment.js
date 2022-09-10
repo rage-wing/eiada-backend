@@ -34,7 +34,9 @@ const AppointmentController = (() => {
     const appointments = await getAllAppointments('doctor', userId);
     const upcoming = appointments
       .filter(
-        (appointment) => appointment.date.getTime() >= new Date().getTime()
+        (appointment) =>
+          appointment.date.getTime() >= new Date().getTime() ||
+          ['draft', 'pending'].includes(appointment.status)
       )
       .sort((a, b) => a.date.getTime() - b.date.getTime());
     res.sends(200, upcoming);
@@ -45,7 +47,9 @@ const AppointmentController = (() => {
     const appointments = await getAllAppointments('doctor', userId);
     const history = appointments
       .filter(
-        (appointment) => appointment.date.getTime() < new Date().getTime()
+        (appointment) =>
+          appointment.date.getTime() < new Date().getTime() ||
+          ['confirmed', 'cancelled'].includes(appointment.status)
       )
       .sort((a, b) => b.date.getTime() - a.date.getTime());
     res.sends(200, history);
