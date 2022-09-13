@@ -77,7 +77,7 @@ const Paymob = (() => {
     return payment.token;
   };
 
-  const createIntention = async (patient, price, extra) => {
+  const createIntention = async (patient, price, extras) => {
     const config = {
       headers: {
         Authorization: `Token ${secret}`,
@@ -101,7 +101,7 @@ const Paymob = (() => {
         email: patient.email,
       },
       items: [],
-      extras: {},
+      extras,
     };
 
     const res = await axios.post(

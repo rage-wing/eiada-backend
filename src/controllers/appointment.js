@@ -54,6 +54,13 @@ const AppointmentController = (() => {
     res.sends(200, history);
   };
 
+  const create = async (req, res) => {
+    const article = new Article({
+      ...articleData,
+      thumbnail: `${host}/${path}`,
+    });
+  };
+
   const calcPayment = async (req, res) => {
     let appointmentPrice = 30000;
     const { promoCode } = req.body;
@@ -110,7 +117,8 @@ const AppointmentController = (() => {
             ...patient._doc,
             phone_number: phone,
           },
-          appointmentPrice
+          appointmentPrice,
+          req.body
         );
         res.sends(200, result);
       } else {
@@ -119,10 +127,6 @@ const AppointmentController = (() => {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const processPayment = (req, res) => {
-    res.sends(200, req.query);
   };
 
   const generatePaymentToken = async (req, res) => {
@@ -143,7 +147,7 @@ const AppointmentController = (() => {
     getUpcoming,
     getHistory,
     calcPayment,
-    processPayment,
+    create,
   };
 })();
 
