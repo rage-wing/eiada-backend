@@ -33,8 +33,8 @@ const AppointmentController = (() => {
     const userId = '62cc29ffeb2fe06ff7211bb0';
     const appointments = await getAllAppointments('doctor', userId);
     const upcoming = appointments
-      .filter(
-        (appointment) => appointment.date.getTime() >= new Date().getTime()
+      .filter((appointment) =>
+        ['confirmed', 'cancelled'].includes(appointment.status)
       )
       .sort((a, b) => a.date.getTime() - b.date.getTime());
     res.sends(200, upcoming);
@@ -44,8 +44,8 @@ const AppointmentController = (() => {
     const userId = '62cc29ffeb2fe06ff7211bb0';
     const appointments = await getAllAppointments('doctor', userId);
     const history = appointments
-      .filter(
-        (appointment) => appointment.date.getTime() < new Date().getTime()
+      .filter((appointment) =>
+        ['draft', 'pending'].includes(appointment.status)
       )
       .sort((a, b) => b.date.getTime() - a.date.getTime());
     res.sends(200, history);
