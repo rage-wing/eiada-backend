@@ -51,10 +51,30 @@ const AppointmentController = (() => {
     res.sends(200, history);
   };
 
+  const accept = async (req, res) => {
+    const { id } = req.body;
+    console.log(id);
+    Appointment.findByIdAndUpdate(id, {
+      status: 'confirmed',
+    });
+
+    res.sends(200, 'confirmed');
+  };
+  const reject = async (req, res) => {
+    const { id } = req.body;
+    Appointment.findByIdAndUpdate(id, {
+      status: 'cancelled',
+    });
+
+    res.sends(200, 'cancelled');
+  };
+
   return {
     getAll,
     getUpcoming,
     getPending,
+    accept,
+    reject,
   };
 })();
 

@@ -6,5 +6,7 @@ const router = express.Router();
 router.get('/', appointment.getAll);
 router.get('/upcoming', appointment.getUpcoming);
 router.get('/pending', appointment.getPending);
+router.post('/accept', appointment.accept);
+router.post('/reject', appointment.reject);
 
 module.exports = router;

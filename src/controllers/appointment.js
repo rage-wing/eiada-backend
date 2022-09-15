@@ -120,6 +120,7 @@ const AppointmentController = (() => {
           appointmentPrice,
           req.body
         );
+
         res.sends(200, result);
       } else {
         res.sends(404, 'patient not found');
