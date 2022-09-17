@@ -1,4 +1,5 @@
 const Image = require('../models/Image');
+const cloudinary = require('cloudinary');
 
 const ImageController = (() => {
   const getAll = async (req, res) => {
@@ -7,22 +8,36 @@ const ImageController = (() => {
   };
 
   const imageUpload = async (req, res) => {
-    const { file } = req;
-    const path = file.path.replace(/\\/g, '/').replace('public/', '');
-    const hostname = req.get('host').replace('localhost', process.env.HOSTNAME);
+    // const { base64, ...other } = req.body.image;
 
-    const host = `${req.protocol}://${hostname}`;
-    const image = new Image({
-      url: `${host}/${path}`,
-      ...file,
-    });
-    await image.save();
-    res.sends(200, image);
+    console.log(req.body.image.fileName);
+
+    //     cloudinary.v2.uploader
+    // .upload(`data:image/png;base64,${file.base64}`)
+
+    // const image = new Image({
+    //   url: `${host}/${path}`,
+    //   ...file,
+    // });
+    // await image.save();
+    // console.log(req.body.image);
+    res.sends(200, file);
+  };
+
+  const remove = async (req, res) => {
+    const imageId = req.params.id;
+    try {
+      const image = await Image.findByIdAndDelete(imageId);
+      res.sends(200, image);
+    } catch (error) {
+      res.sends(400, error.message);
+    }
   };
 
   return {
     getAll,
     imageUpload,
+    remove,
   };
 })();
 
