@@ -8,15 +8,6 @@ const Image = new Schema({
     type: String,
     required: 'image is required',
   },
-  mimetype: {
-    type: String,
-  },
-  originalname: {
-    type: String,
-  },
-  size: {
-    type: Number,
-  },
   createdAt: {
     type: Date,
     default: Date.now,

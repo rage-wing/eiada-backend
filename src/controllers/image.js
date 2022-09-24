@@ -8,20 +8,17 @@ const ImageController = (() => {
   };
 
   const imageUpload = async (req, res) => {
-    // const { base64, ...other } = req.body.image;
+    const img = await cloudinary.v2.uploader.upload(
+      `data:image/png;base64,${req.body.image}`
+    );
 
-    console.log(req.body.image.fileName);
+    const image = new Image({
+      ...img,
+      createdAt: img.created_at,
+    });
+    await image.save();
 
-    //     cloudinary.v2.uploader
-    // .upload(`data:image/png;base64,${file.base64}`)
-
-    // const image = new Image({
-    //   url: `${host}/${path}`,
-    //   ...file,
-    // });
-    // await image.save();
-    // console.log(req.body.image);
-    res.sends(200, file);
+    res.sends(200, image);
   };
 
   const remove = async (req, res) => {
