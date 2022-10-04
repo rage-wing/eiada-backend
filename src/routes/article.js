@@ -10,5 +10,7 @@ const upload = multer({ storage });
 
 router.get('/', article.getAll);
 router.post('/', upload.single('image'), article.create);
+router.put('/:id', article.edit);
+router.delete('/:id', article.remove);
 
 module.exports = router;

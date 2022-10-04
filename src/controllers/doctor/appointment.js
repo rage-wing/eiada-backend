@@ -16,9 +16,7 @@ const AppointmentController = (() => {
         model: 'User',
       },
     ];
-    const appointments = await Appointment.find({ [role]: uid }).populate(
-      populateAppointmentMap
-    );
+    const appointments = await Appointment.find({ [role]: uid }).populate(populateAppointmentMap);
 
     return appointments;
   };
@@ -33,9 +31,7 @@ const AppointmentController = (() => {
     const userId = '62cc29ffeb2fe06ff7211bb0';
     const appointments = await getAllAppointments('doctor', userId);
     const upcoming = appointments
-      .filter((appointment) =>
-        ['confirmed', 'cancelled'].includes(appointment.status)
-      )
+      .filter((appointment) => ['confirmed'].includes(appointment.status))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
     res.sends(200, upcoming);
   };
@@ -44,29 +40,33 @@ const AppointmentController = (() => {
     const userId = '62cc29ffeb2fe06ff7211bb0';
     const appointments = await getAllAppointments('doctor', userId);
     const history = appointments
-      .filter((appointment) =>
-        ['draft', 'pending'].includes(appointment.status)
-      )
+      .filter((appointment) => ['pending'].includes(appointment.status))
       .sort((a, b) => b.date.getTime() - a.date.getTime());
     res.sends(200, history);
   };
 
   const accept = async (req, res) => {
-    const { id } = req.body;
-    console.log(id);
-    Appointment.findByIdAndUpdate(id, {
-      status: 'confirmed',
-    });
-
-    res.sends(200, 'confirmed');
+    const appointmentId = req.params.id;
+    try {
+      const appointment = await Appointment.findByIdAndUpdate(appointmentId, {
+        status: 'confirmed',
+      });
+      res.sends(200, appointment);
+    } catch (error) {
+      res.sends(400, error.message);
+    }
   };
-  const reject = async (req, res) => {
-    const { id } = req.body;
-    Appointment.findByIdAndUpdate(id, {
-      status: 'cancelled',
-    });
 
-    res.sends(200, 'cancelled');
+  const reject = async (req, res) => {
+    const appointmentId = req.params.id;
+    try {
+      const appointment = await Appointment.findByIdAndUpdate(appointmentId, {
+        status: 'cancelled',
+      });
+      res.sends(200, appointment);
+    } catch (error) {
+      res.sends(400, error.message);
+    }
   };
 
   return {

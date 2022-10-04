@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 const DB = require('./db');
+const cloudinary = require('cloudinary');
 require('dotenv').config();
 
 const { errorHandler, notFound } = require('./middlewares/errorHandler');
@@ -16,6 +17,11 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'common' : 'dev'));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // overrides
 app.response.sends = response;
