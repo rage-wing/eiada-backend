@@ -25,6 +25,6 @@
     "linebreak-style": "off",
     "object-curly-newline": "off",
     "no-console": "off",
-    "class-methods-use-this": "off",
+    "class-methods-use-this": "off"
   }
 }

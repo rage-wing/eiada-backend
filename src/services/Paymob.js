@@ -33,13 +33,7 @@ const Paymob = (() => {
     });
     return order.data;
   };
-  const createPaymentToken = async (
-    token,
-    orderId,
-    IntegrationId,
-    price,
-    billingData
-  ) => {
+  const createPaymentToken = async (token, orderId, IntegrationId, price, billingData) => {
     const payment = await axios.post(`${baseUrl}/acceptance/payment_keys`, {
       auth_token: token,
       currency: 'EGP',
@@ -67,13 +61,7 @@ const Paymob = (() => {
     const order = await createOrder(token, 3500);
     // CARD : 423021
     // WALLET : 2393641
-    const payment = await createPaymentToken(
-      token,
-      order.id,
-      423021,
-      3500,
-      billingData
-    );
+    const payment = await createPaymentToken(token, order.id, 423021, 3500, billingData);
     return payment.token;
   };
 
@@ -104,11 +92,19 @@ const Paymob = (() => {
       extras,
     };
 
-    const res = await axios.post(
-      'https://flashapi.paymob.com/v1/intention/',
-      data,
-      config
-    );
+    const res = await axios.post('https://flashapi.paymob.com/v1/intention/', data, config);
+
+    return res.data;
+  };
+
+  const getIntention = async (id) => {
+    const config = {
+      headers: {
+        Authorization: `Token ${secret}`,
+      },
+    };
+
+    const res = await axios.get(`https://flashapi.paymob.com/v1/intention/${id}`, config);
 
     return res.data;
   };
@@ -116,6 +112,7 @@ const Paymob = (() => {
   return {
     pay,
     createIntention,
+    getIntention,
   };
 })();
 

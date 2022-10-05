@@ -19,9 +19,7 @@ const AppointmentController = (() => {
         model: 'User',
       },
     ];
-    const appointments = await Appointment.find({ [role]: uid }).populate(
-      populateAppointmentMap
-    );
+    const appointments = await Appointment.find({ [role]: uid }).populate(populateAppointmentMap);
 
     return appointments;
   };
@@ -36,9 +34,7 @@ const AppointmentController = (() => {
     const userId = req.params.uid;
     const appointments = await getAllAppointments('patient', userId);
     const upcoming = appointments
-      .filter(
-        (appointment) => appointment.date.getTime() >= new Date().getTime()
-      )
+      .filter((appointment) => appointment.date.getTime() >= new Date().getTime())
       .sort((a, b) => a.date.getTime() - b.date.getTime());
     res.sends(200, upcoming);
   };
@@ -47,18 +43,26 @@ const AppointmentController = (() => {
     const userId = req.params.uid;
     const appointments = await getAllAppointments('patient', userId);
     const history = appointments
-      .filter(
-        (appointment) => appointment.date.getTime() < new Date().getTime()
-      )
+      .filter((appointment) => appointment.date.getTime() < new Date().getTime())
       .sort((a, b) => b.date.getTime() - a.date.getTime());
     res.sends(200, history);
   };
 
   const create = async (req, res) => {
-    const article = new Article({
-      ...articleData,
-      thumbnail: `${host}/${path}`,
-    });
+    try {
+      const { intentionId } = req.body;
+
+      console.log(req.body);
+
+      const result = await Paymob.getIntention(intentionId);
+      const data = result.extras.creation_extras;
+      const appointment = new Appointment(data);
+      appointment.save();
+
+      res.sends(200, appointment);
+    } catch (error) {
+      res.sends(500, error);
+    }
   };
 
   const calcPayment = async (req, res) => {
@@ -73,8 +77,9 @@ const AppointmentController = (() => {
         });
       } else {
         if (type === 'flat') appointmentPrice -= amount;
-        if (type === 'percent')
+        if (type === 'percent') {
           appointmentPrice = (appointmentPrice * amount) / 100;
+        }
       }
     }
     res.sends(200, {
@@ -83,13 +88,13 @@ const AppointmentController = (() => {
   };
 
   const reserve = async (req, res) => {
-    let appointmentPrice = 30000;
-    const { phone, promoCode } = req.body;
-    if (!phone) {
+    let appointmentPrice = 2000;
+    const { userPhoneNumber, promoCode } = req.body;
+    if (!userPhoneNumber) {
       res.sends(422, 'No phone number specified');
       return;
     }
-    if (!/^[0-9]{11}$/.test(phone)) {
+    if (!/^[0-9]{11}$/.test(userPhoneNumber)) {
       res.sends(422, 'not a valid phone number');
       return;
     }
@@ -102,8 +107,9 @@ const AppointmentController = (() => {
           res.sends(400, 'this promo code expired');
         } else {
           if (type === 'flat') appointmentPrice -= amount;
-          if (type === 'percent')
+          if (type === 'percent') {
             appointmentPrice = (appointmentPrice * amount) / 100;
+          }
         }
       } else {
         res.sends(400, 'promo code not valid');
@@ -115,11 +121,13 @@ const AppointmentController = (() => {
         const result = await Paymob.createIntention(
           {
             ...patient._doc,
-            phone_number: phone,
+            phone_number: userPhoneNumber,
           },
           appointmentPrice,
           req.body
         );
+
+        console.log(result);
 
         res.sends(200, result);
       } else {

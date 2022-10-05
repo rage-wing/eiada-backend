@@ -28,7 +28,6 @@ const Appointment = new Schema({
   },
   userAddress: {
     type: String,
-    required: 'user address is required',
   },
   userPhoneNumber: {
     type: String,
