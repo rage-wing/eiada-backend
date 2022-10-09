@@ -2,6 +2,7 @@ const Paymob = require('../services/Paymob');
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
 const Promo = require('../models/Promo');
+const Zoom = require('../services/Zoom');
 
 const AppointmentController = (() => {
   const getAllAppointments = async (role, uid) => {
@@ -52,15 +53,16 @@ const AppointmentController = (() => {
     try {
       const { intentionId } = req.body;
 
-      console.log(req.body);
-
       const result = await Paymob.getIntention(intentionId);
       const data = result.extras.creation_extras;
-      const appointment = new Appointment(data);
-      appointment.save();
 
+      const zoom = await Zoom.createMeeting();
+
+      const appointment = new Appointment({ ...data, zoomLink: zoom.start_url });
+      appointment.save();
       res.sends(200, appointment);
     } catch (error) {
+      console.log(error);
       res.sends(500, error);
     }
   };

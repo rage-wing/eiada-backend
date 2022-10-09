@@ -41,7 +41,10 @@ const Appointment = new Schema({
   type: {
     type: String,
     enum: ['in-person', 'online'],
-    default: 'in-person',
+    default: 'online',
+  },
+  zoomLink: {
+    type: String,
   },
   date: {
     type: Date,
