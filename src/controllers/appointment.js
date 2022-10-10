@@ -105,7 +105,7 @@ const AppointmentController = (() => {
   };
 
   const reserve = async (req, res) => {
-    let appointmentPrice = 2000;
+    let appointmentPrice = process.env.PRICE || 30000;
     const { userPhoneNumber, promoCode } = req.body;
     if (!userPhoneNumber) {
       res.sends(422, 'No phone number specified');
