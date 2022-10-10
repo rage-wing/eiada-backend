@@ -20,7 +20,9 @@ const AppointmentController = (() => {
         model: 'User',
       },
     ];
-    const appointments = await Appointment.find({ [role]: uid }).populate(populateAppointmentMap);
+    const appointments = await Appointment.find({ [role]: uid }).populate(
+      populateAppointmentMap
+    );
 
     return appointments;
   };
@@ -35,7 +37,9 @@ const AppointmentController = (() => {
     const userId = req.params.uid;
     const appointments = await getAllAppointments('patient', userId);
     const upcoming = appointments
-      .filter((appointment) => appointment.date.getTime() >= new Date().getTime())
+      .filter(
+        (appointment) => appointment.date.getTime() >= new Date().getTime()
+      )
       .sort((a, b) => a.date.getTime() - b.date.getTime());
     res.sends(200, upcoming);
   };
@@ -44,7 +48,9 @@ const AppointmentController = (() => {
     const userId = req.params.uid;
     const appointments = await getAllAppointments('patient', userId);
     const history = appointments
-      .filter((appointment) => appointment.date.getTime() < new Date().getTime())
+      .filter(
+        (appointment) => appointment.date.getTime() < new Date().getTime()
+      )
       .sort((a, b) => b.date.getTime() - a.date.getTime());
     res.sends(200, history);
   };
@@ -52,13 +58,17 @@ const AppointmentController = (() => {
   const create = async (req, res) => {
     try {
       const { intentionId } = req.body;
+      console.log(intentionId);
 
       const result = await Paymob.getIntention(intentionId);
       const data = result.extras.creation_extras;
 
       const zoom = await Zoom.createMeeting();
 
-      const appointment = new Appointment({ ...data, zoomLink: zoom.start_url });
+      const appointment = new Appointment({
+        ...data,
+        zoomLink: zoom.start_url,
+      });
       appointment.save();
       res.sends(200, appointment);
     } catch (error) {
