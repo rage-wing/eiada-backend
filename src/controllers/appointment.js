@@ -40,7 +40,8 @@ const AppointmentController = (() => {
       .filter(
         (appointment) => appointment.date.getTime() >= new Date().getTime()
       )
-      .sort((a, b) => a.date.getTime() - b.date.getTime());
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
+
     res.sends(200, upcoming);
   };
 
@@ -62,12 +63,16 @@ const AppointmentController = (() => {
 
       const result = await Paymob.getIntention(intentionId);
       const data = result.extras.creation_extras;
+      let link = null;
 
-      const zoom = await Zoom.createMeeting();
+      if (data.type === 'online') {
+        const zoom = await Zoom.createMeeting();
+        link = zoom.start_url;
+      }
 
       const appointment = new Appointment({
         ...data,
-        zoomLink: zoom.start_url,
+        link,
       });
       appointment.save();
       res.sends(200, appointment);
