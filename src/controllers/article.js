@@ -1,5 +1,5 @@
-const Article = require('../models/Article');
 const cloudinary = require('cloudinary');
+const Article = require('../models/Article');
 
 const ArticleController = (() => {
   const getAll = async (req, res) => {
@@ -8,17 +8,14 @@ const ArticleController = (() => {
   };
 
   const create = async (req, res) => {
-    const { file } = req;
-    const { thumbnail, ...articleData } = req.body;
-
-    const path = file.path.replace(/\\/g, '/').replace('public/', '');
-    const hostname = req.get('host').replace('localhost', process.env.HOSTNAME);
-
-    const host = `${req.protocol}://${hostname}`;
+    const { thumbnail, ...data } = req.body;
+    const img = await cloudinary.v2.uploader.upload(
+      `data:image/png;base64,${thumbnail}`
+    );
 
     const article = new Article({
-      ...articleData,
-      thumbnail: `${host}/${path}`,
+      ...data,
+      thumbnail: img.url,
     });
 
     await article.save();

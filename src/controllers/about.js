@@ -1,9 +1,7 @@
 const About = require('../models/About');
 
 const AboutController = (() => {
-  const getAbout = async () => {
-    return (await About.find().exec())[0];
-  };
+  const getAbout = async () => (await About.find().exec())[0];
 
   const get = async (req, res) => {
     const about = await getAbout();

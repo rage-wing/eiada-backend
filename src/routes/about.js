@@ -1,5 +1,6 @@
-const about = require('../controllers/about');
 const express = require('express');
+const about = require('../controllers/about');
+
 const router = express.Router();
 
 router.get('/', about.get);

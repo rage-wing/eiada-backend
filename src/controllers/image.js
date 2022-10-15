@@ -1,5 +1,5 @@
-const Image = require('../models/Image');
 const cloudinary = require('cloudinary');
+const Image = require('../models/Image');
 
 const ImageController = (() => {
   const getAll = async (req, res) => {
@@ -8,9 +8,7 @@ const ImageController = (() => {
   };
 
   const imageUpload = async (req, res) => {
-    const img = await cloudinary.v2.uploader.upload(
-      `data:image/png;base64,${req.body.image}`
-    );
+    const img = await cloudinary.v2.uploader.upload(`data:image/png;base64,${req.body.image}`);
 
     const image = new Image({
       ...img,

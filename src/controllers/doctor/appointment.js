@@ -22,13 +22,13 @@ const AppointmentController = (() => {
   };
 
   const getAll = async (req, res) => {
-    const userId = '62cc29ffeb2fe06ff7211bb0';
+    const userId = 'process.env.DOCTOR_UID';
     const appointments = await getAllAppointments('doctor', userId);
     res.sends(200, appointments);
   };
 
   const getUpcoming = async (req, res) => {
-    const userId = '62cc29ffeb2fe06ff7211bb0';
+    const userId = 'process.env.DOCTOR_UID';
     const appointments = await getAllAppointments('doctor', userId);
     const upcoming = appointments
       .filter((appointment) => ['confirmed'].includes(appointment.status))
@@ -37,7 +37,7 @@ const AppointmentController = (() => {
   };
 
   const getPending = async (req, res) => {
-    const userId = '62cc29ffeb2fe06ff7211bb0';
+    const userId = 'process.env.DOCTOR_UID';
     const appointments = await getAllAppointments('doctor', userId);
     const history = appointments
       .filter((appointment) => ['pending'].includes(appointment.status))
