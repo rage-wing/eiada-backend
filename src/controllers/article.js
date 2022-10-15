@@ -9,12 +9,11 @@ const ArticleController = (() => {
 
   const create = async (req, res) => {
     const { thumbnail, ...data } = req.body;
-    const img = await cloudinary.v2.uploader.upload(
-      `data:image/png;base64,${thumbnail}`
-    );
+    const img = await cloudinary.v2.uploader.upload(`data:image/png;base64,${thumbnail}`);
 
     const article = new Article({
       ...data,
+      author: process.env.DOCTOR_UID,
       thumbnail: img.url,
     });
 
@@ -26,9 +25,7 @@ const ArticleController = (() => {
     const { id } = req.params;
     try {
       const { thumbnail, ...data } = req.body;
-      const img = await cloudinary.v2.uploader.upload(
-        `data:image/png;base64,${thumbnail}`
-      );
+      const img = await cloudinary.v2.uploader.upload(`data:image/png;base64,${thumbnail}`);
       const article = await Article.findByIdAndUpdate(id, {
         ...data,
         thumbnail: img.url,
