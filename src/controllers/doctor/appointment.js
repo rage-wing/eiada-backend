@@ -16,7 +16,9 @@ const AppointmentController = (() => {
         model: 'User',
       },
     ];
-    const appointments = await Appointment.find({ [role]: uid }).populate(populateAppointmentMap);
+    const appointments = await Appointment.find({ [role]: uid }).populate(
+      populateAppointmentMap
+    );
 
     return appointments;
   };
@@ -40,7 +42,10 @@ const AppointmentController = (() => {
     const userId = 'process.env.DOCTOR_UID';
     const appointments = await getAllAppointments('doctor', userId);
     const history = appointments
-      .filter((appointment) => ['pending'].includes(appointment.status))
+      .filter(
+        (appointment) => ['pending'].includes(appointment.status)
+          && appointment.date.getTime() > new Date().getTime()
+      )
       .sort((a, b) => b.date.getTime() - a.date.getTime());
     res.sends(200, history);
   };

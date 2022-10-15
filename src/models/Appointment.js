@@ -41,10 +41,11 @@ const Appointment = new Schema({
   type: {
     type: String,
     enum: ['in-person', 'online'],
-    default: 'online',
+    default: 'in-person',
   },
-  zoomLink: {
+  link: {
     type: String,
+    default: 'https://www.google.com/maps/@29.976974,31.261807,15z',
   },
   date: {
     type: Date,
